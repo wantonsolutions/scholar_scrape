@@ -141,7 +141,7 @@ def plot_citations_per_day(log_file,plot_file):
     print(x,y)
 
     #do the plotting
-    plt.plot(x,y)
+    plt.plot(x,y, marker="x")
     plt.savefig(plot_file)
 
 def parse_args():
