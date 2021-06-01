@@ -148,15 +148,29 @@ def parse_args():
     dir_path = ""
     if len(sys.argv) != 2:
         dir_path = os.getcwd()
-        print("No path suppiled writting to this directory", path)
-        return path
+        print("No path suppiled writting to this directory", dir_path)
+        return dir_path
     else:
         test_path = sys.argv[1]
         if not path.exists(test_path):
             dir_path = os.getcwd()
-            print("Argument ", test_path, "is not a valid directory, writing to this directory ", path)
+            print("Argument ", test_path, "is not a valid directory, writing to this directory ", dir_path)
         dir_path = test_path
     return dir_path
+
+def tail_log_n(log_file, n):
+    log = get_log_from_disk(log_file)
+    newLog = []
+    index = 0
+    for i in log:
+        if len(log) - n <= index:
+            newLog.append(i)
+        index=index+1
+    write_log_to_disk(log_file+".TRUNK", newLog)
+    print(newLog)
+    return
+
+
 
 
 #the only argument that I'm gong to take is the path to the directory we want to write to.
@@ -164,6 +178,9 @@ dir_path = parse_args()
 
 citation_log_file=dir_path+"/"+citation_log_file
 citation_chart_file=dir_path+"/"+citation_chart_file
+
+#tail_log_n(citation_log_file,3)
+#exit(0)
 
 update_log(citation_log_file)
 plot_citations_per_day(citation_log_file,citation_chart_file)
