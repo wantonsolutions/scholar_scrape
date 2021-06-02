@@ -10,9 +10,9 @@ def init():
 
 def blink_times(times,duration):
     for i in range(times):
-        GPIO.output(18,GPIO.HIGH)
+        GPIO.output(17,GPIO.HIGH)
         time.sleep(duration)
-        GPIO.output(18,GPIO.LOW)
+        GPIO.output(17,GPIO.LOW)
         time.sleep(duration)
 
 citation_log_file = "citation.log"
