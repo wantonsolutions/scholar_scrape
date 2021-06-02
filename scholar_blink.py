@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import scholar
+import time
 from scholar import Scholar
 from scholar import LogEntry
 
