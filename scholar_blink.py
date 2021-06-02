@@ -23,6 +23,7 @@ blinks = scholar.get_daily_diff(citation_log_file)
 
 print("BLINKING #", blinks, " Times")
 
+init()
 blink_times(blinks, 0.5)
 
 
