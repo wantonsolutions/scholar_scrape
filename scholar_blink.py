@@ -1,5 +1,7 @@
 #import RPi.GPIO as GPIO
 import scholar
+from scholar import Scholar
+from scholar import LogEntry
 
 citation_log_file = "citation.log"
 

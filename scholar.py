@@ -116,6 +116,18 @@ def update_log(log_file):
     for l in complete_log:
         print(l)
 
+def unique_log_days(complete_log):
+    last_day = datetime.datetime(1980,1,1)
+    #todo actually take the date into account
+    unique_log = []
+    for le in complete_log:
+        if le.date.date() == last_day.date():
+            continue
+        else:
+            last_day = le.date
+            unique_log.append(le)
+    return unique_log
+
 def get_daily_diff(log_file):
     filename = log_file
     complete_log = get_log_from_disk(filename)
@@ -132,17 +144,6 @@ def get_daily_diff(log_file):
     print("Penultimate: ", a)
     return b.total_citations - a.total_citations
 
-def unique_log_days(complete_log):
-    last_day = datetime.date(0,0,0)
-    #todo actually take the date into account
-    unique_log = []
-    for le in complete_log:
-        if le.date.date() == last_day.date():
-            continue
-        else:
-            last_day = le.date
-            unique_log.append(le)
-    return unique_log
 
 def tail_log_n(log_file, n):
     complete_log = get_log_from_disk(log_file)
