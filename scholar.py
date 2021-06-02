@@ -84,6 +84,8 @@ def get_log_from_disk(filename):
         file.close()
         return log
     except: 
+        e = sys.exc_info()[0]
+        print (e)
         print ("ERROR: Unable to extract log from file: ",filename)
         return []
 
@@ -93,6 +95,8 @@ def write_log_to_disk(filename, log):
         pickle.dump(log,file)
         file.close()
     except: 
+        e = sys.exc_info()[0]
+        print (e)
         print ("ERROR: Unable to write to file: ",filename)
 
 def update_log(log_file):
@@ -116,24 +120,52 @@ def get_daily_diff(log_file):
     filename = log_file
     complete_log = get_log_from_disk(filename)
     print(complete_log)
-    if(len(complete_log) < 2):
+    #trim log
+    unique_log = unique_log_days(complete_log)
+    if(len(unique_log) < 2):
         print("Log to short to make diff")
         return -1
 
-    b = complete_log[len(complete_log)-1]
-    a = complete_log[len(complete_log)-2]
+    b = unique_log[len(unique_log)-1]
+    a = unique_log[len(unique_log)-2]
     print("Ultimate: ", b)
     print("Penultimate: ", a)
     return b.total_citations - a.total_citations
 
+def unique_log_days(complete_log):
+    last_day = datetime.date(0,0,0)
+    #todo actually take the date into account
+    unique_log = []
+    for le in complete_log:
+        if le.date.date() == last_day.date():
+            continue
+        else:
+            last_day = le.date
+            unique_log.append(le)
+    return unique_log
+
+def tail_log_n(log_file, n):
+    complete_log = get_log_from_disk(log_file)
+    log = unique_log_days(complete_log)
+    newLog = []
+    index = 0
+    for i in log:
+        if len(log) - n <= index:
+            newLog.append(i)
+        index=index+1
+    write_log_to_disk(log_file+".TRUNK", newLog)
+    print(newLog)
+    return
+
 def plot_citations_per_day(log_file,plot_file):
     filename = log_file
     complete_log = get_log_from_disk(filename)
+    unique_log = unique_log_days(complete_log)
     x = []
     y = []
     last_days_citations=0
     #todo actually take the date into account
-    for le in complete_log:
+    for le in unique_log:
         if last_days_citations != 0:
             x.append(le.date)
             y.append(le.total_citations - last_days_citations)
@@ -158,29 +190,16 @@ def parse_args():
         dir_path = test_path
     return dir_path
 
-def tail_log_n(log_file, n):
-    log = get_log_from_disk(log_file)
-    newLog = []
-    index = 0
-    for i in log:
-        if len(log) - n <= index:
-            newLog.append(i)
-        index=index+1
-    write_log_to_disk(log_file+".TRUNK", newLog)
-    print(newLog)
-    return
 
+def main(citation_log_file, citation_chart_file):
+    #the only argument that I'm gong to take is the path to the directory we want to write to.
+    dir_path = parse_args()
+    citation_log_file=dir_path+"/"+citation_log_file
+    citation_chart_file=dir_path+"/"+citation_chart_file
+    #tail_log_n(citation_log_file,3)
+    #exit(0)
+    update_log(citation_log_file)
+    plot_citations_per_day(citation_log_file,citation_chart_file)
 
-
-
-#the only argument that I'm gong to take is the path to the directory we want to write to.
-dir_path = parse_args()
-
-citation_log_file=dir_path+"/"+citation_log_file
-citation_chart_file=dir_path+"/"+citation_chart_file
-
-#tail_log_n(citation_log_file,3)
-#exit(0)
-
-update_log(citation_log_file)
-plot_citations_per_day(citation_log_file,citation_chart_file)
+if __name__ == "__main__":
+    main(citation_log_file, citation_chart_file) 
